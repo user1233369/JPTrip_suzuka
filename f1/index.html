@@ -70,18 +70,19 @@
             <div id="itinerary-list" class="space-y-4">
                 </div>
         </div>
-        <div id="shopping-section" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-gray-800">💊 藥妝 & 購物清單</h2>
-            <div class="bg-white p-4 rounded-2xl card-shadow">
-                <div class="border-2 border-dashed border-gray-300 rounded-xl h-32 flex flex-col items-center justify-center text-gray-400 mb-3">
-                    <i class="fas fa-camera text-2xl mb-1"></i>
-                    <span class="text-xs">新增圖片</span>
-                </div>
-                <input type="text" placeholder="商品名稱 (例: EVE止痛藥)" class="w-full text-sm border-b border-gray-200 py-2 outline-none mb-2">
-                <textarea placeholder="備註 (例: 要藍色包裝, 買3盒)" class="w-full text-sm bg-gray-50 p-2 rounded-lg outline-none h-20"></textarea>
-                <button class="w-full bg-black text-white py-2 rounded-lg mt-2 text-sm font-medium">加入清單</button>
-            </div>
+
+       <div id="shopping-section" class="hidden px-4 space-y-4 pb-24">
+            <div class="flex justify-between items-center mt-6 mb-2">
+        <h2 class="text-xl font-bold text-gray-800">🛒 藥妝購物清單</h2>
+            <span id="shopping-count" class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">載入中...</span>
         </div>
+    
+        <div id="shopping-grid" class="grid grid-cols-2 gap-4">
+        </div>
+    </div>
+    
+    
+    
 
         <div id="tools-section" class="hidden space-y-4">
             <h2 class="text-lg font-bold text-gray-800">✈️ 航班 & 住宿</h2>
@@ -169,17 +170,28 @@
                     <i class="fas fa-map-marker-alt mr-1"></i> 導航至民宿
                  </a>
             </div>
-             
-            <div class="bg-white rounded-2xl card-shadow p-4">
-                 <h3 class="font-bold text-gray-800 mb-3">💰 記帳與預算</h3>
-                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                    <div class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
-                  </div>
-                  <div class="flex justify-between text-xs text-gray-500">
-                      <span>已花費: ¥0</span>
-                      <span>總預算: ¥0</span>
-                  </div>
-             </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="exp-name" placeholder="項目 (例: 拉麵)" 
+                    class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
+                <input type="number" id="exp-price" placeholder="金額 (日幣)" 
+                    class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
+                </div>
+                <select id="exp-person" class="w-full bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200 text-gray-600">
+                    <option value="我">🙋‍♂️ 我</option>
+                    <option value="你">👤 你</option>
+                    <option value="他">👤 他</option>
+                </select>
+                <button onclick="addExpense()" 
+                    class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all">
+                新增紀錄
+                </button>
+                </div>
+
+            <div id="expense-list" class="space-y-2">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -211,13 +223,13 @@
                     { type: "food", title: "Ikareta Noodle Fishtons", time: "12:30", note: "沾麵", nav: "Ikareta Noodle Fishtons" },
                     { type: "coffee", title: "Mel", time: "13:30", note: "咖啡-豆子", nav: "Mel Coffee Roasters" },
                     { type: "sight", title: "藥妝", time: "14:00", note: "藥妝或衣服" },
-                    { type: "sight", title: "糖果", time: "?:?", note: "Pocky",nav:"Baton d’or 高島屋大阪店" },
+                    { type: "sight", title: "糖果", time: "?:?", note: "Pocky|B1",nav:"Baton d’or 高島屋大阪店" },
                     { type: "house", title: "前往住宿", time: "15:00", note: "APA HOTEL＆RESORT OSAKA NAMBA EKIMAE TOWER", nav: "APA HOTEL＆RESORT OSAKA NAMBA EKIMAE TOWER" },
                     { type: "coffee", title: "ULT", time: "?:?", note: "咖啡|豆子||營業到下午5點", nav: "Ult Coffee" },
                     { type: "coffee", title: "Glitch", time: "?:?", note: "咖啡&豆子||營業到下午7點", nav: "GLITCH COFFEE OSAKA" },
                     { type: "food", title: "燃えよ麺助", time: "18:00", note: "拉麵", nav: "燃えよ麺助" },
                     { type: "sight", title: "夜景", time: "?:?", note:"16F|Free",nav:"WowUs（ワオアス）" },
-                    { type: "sight", title: "底片相機", time: "?:?", note:"買幾台",nav:"カメラのキタムラ 大阪／PHOTO MARCHE By北村写真機店" },
+                    { type: "sight", title: "尋找底片相機", time: "?:?", note:"買幾台",nav:"カメラのキタムラ 大阪／PHOTO MARCHE By北村写真機店" },
                     { type: "sight", title: "63angel_oasaka", time: "20:10", note:"open time 19:30|4F",nav:"Burlesque OSAKA" },
                     { type: "sight", title: "逛飛田新地", time: "?:?", note:"逛而已",nav:"Tobita Shinchi Cuisine Association" },
                     
@@ -226,18 +238,18 @@
             {
                 date: "3/25", day: "Wed", location: "京都", coords: { lat: 35.00, lon: 135.77 },
                 items: [
-                     { type: "food", title: "木津市場", time: "6:30", note: "吃海鮮", nav: "木津市場"},
+                    { type: "food", title: "木津市場", time: "6:30", note: "吃海鮮", nav: "木津市場"},
                     { type: "sight", title: "Plan A", time: "?:?", note:"大阪城 + Henry Pizza",nav:"大阪城公園" },
                     { type: "sight", title: "Plan B", time: "?:?", note:"清水寺+二三年坂",nav:"清水寺" },
-                    { type: "sight", title: "Plan C", time: "?:?", note:"京都御苑+Kurasu+Blend",nav:"京都御苑" },
+                    { type: "sight", title: "Plan C", time: "?:?", note:"京都御苑+Kurasu+Blend",nav:"大阪城公園" },
                     { type: "sight", title: "SHOEI", time: "=:=", note:"看帽子",nav:"SHOEI Gallery KYOTO" },
+                    { type: "coffee", title: "", time: "=:=", note: "咖啡", nav: "" },
                     { type: "sight", title: "八阪神社", time: "=:=",nav:"八坂神社" },
-                    { type:"food",title:"Gion Duck Rice",time:"17:00",note:"晚餐",nav:"Gion Duck Rice"},
+                    { type:"food",title:"Gion Duck Rice",time:"=:=",note:"晚餐",nav:"Gion Duck Rice"},
                     { type: "sight", title: "三浦照明", time: "=:=",nav:"三浦照明" },
                     { type: "house", title: "取車前往Airbnb", time: "20:00" ,nav:"京都車站"},
                 ]
             },
-            
             {
                 date: "3/26", day: "Thu", location: "鈴鹿", coords: { lat: 34.8, lon: 136.0 },
                 items: [
@@ -255,10 +267,10 @@
                 date: "3/27", day: "Fir", location: "鈴鹿", coords: { lat: 34.8, lon: 136.0 },
                 items: [
                     { type: "transport", title: "前往鈴鹿", time: "07:00", note: "通勤日;大門8:00開放; 3月27日（週五）Red Bull、Alpine、Ferrari、Haas", nav: "Circuit Kyoryoku Parking Lot" },
-                    { type: "sight", title: "法拉力挑戰賽 自由練習", time: "9:00", note: "45分;", nav: "Suzuka Circuit" },
                     { type: "sight", title: "F1車手舞台",time:"9:30",note:"10分|Red Bull"},
                     { type: "sight", title: "F1車手舞台",time:"9:40",note:"10分|Alpine && mercedes"},
                     { type: "sight", title: "F1車手舞台",time:"9:50",note:"10分|Ferrari"},
+                    { type: "sight", title: "法拉力挑戰賽 自由練習", time: "9:00", note: "45分;", nav: "Suzuka Circuit" },
                     { type: "sight", title: "FP1", time: "11:30", note: "1HR;除GRAN VIEW座席、R-BOX、S-BOX、V、S(家庭座席)都可自由座 持有各指定席觀戰門票者，如有要求請讓座。", nav: "Suzuka Circuit" },
                     { type: "sight", title: "保時捷挑戰賽賽 自由練習", time: "13:00", note: "45分;", nav: "Suzuka Circuit" },
                     { type: "sight", title: "F1車手舞台",time:"14:15",note:"10分|Yuki"},
@@ -274,9 +286,9 @@
                     { type: "sight", title: "F1車手舞台",time:"9:30",note:"10分|Racing Bulls"},
                     { type: "sight", title: "F1車手舞台",time:"9:40",note:"10分|McLaren"},
                     { type: "sight", title: "F1車手舞台",time:"9:50",note:"10分|Williams"},
-                    { type: "sight", title: "法拉利挑戰賽 第一場賽事", time: "9:55", note: "30分;對號入座", nav: "Suzuka Circuit" },
                     { type: "sight", title: "F1車手舞台",time:"10:00",note:"10分|Audi"},
                     { type: "sight", title: "F1車手舞台",time:"10:10",note:"10分|Aston Martin & Cadillac"},
+                    { type: "sight", title: "法拉利挑戰賽 第一場賽事", time: "9:55", note: "30分;對號入座", nav: "Suzuka Circuit" },
                     { type: "sight", title: "FP3", time: "11:30", note: "1HR;對號入座", nav: "Suzuka Circuit" },
                     { type: "sight", title: "保時捷carrera CUP Japan預賽", time: "13:00", note: "30分;對號入座", nav: "Suzuka Circuit" },
                     { type: "sight", title: "Qualifying", time: "15:00", note: "1HR;對號入座", nav: "Suzuka Circuit" },
@@ -307,13 +319,12 @@
                     { type: "food", title: "可麗餅牛井", time: "=:=", note: "點心或解饞", nav: "Sennaritei Yumekyobashiten" },
                     { type: "food", title: "近江牛黑毛和牛專門店", time: "=:=", note: "晚餐備選", nav: "近江牛・黒毛和牛専門店 一休" },
                     { type: "sight", title: "La Collina 近江八幡", time: "=:=", note: "甜點園區，有賣咖啡年輪蛋糕", nav: "La Collina 近江八幡" },
-                    { type: "sight", title: "還車", time: "20:00" ,nav:"京都車站"},
                 ]
             },
              {
                 date: "3/31", day: "Tue", location: "大阪", coords: { lat: 34.69, lon: 135.5 }, // KIX area
                 items: [
-                    { type: "transport", title: "前往關西機場 (KIX)", time: "08:30", note: "haruka;免稅機台", nav: "Kansai International Airport" },
+                    { type: "transport", title: "抵達關西機場 (KIX)", time: "10:00", note: "haruka;免稅機台", nav: "Kansai International Airport" },
                     { type: "sight", title: "BACK TO TAIWAN", time: "13:25",note: "星宇JX821", nav: "Kansai International Airport" }
                 ]
             },
@@ -457,8 +468,164 @@
                 }
             });
         }
+      //test
+    // 1. 你的購物清單資料庫 (可以在這裡隨時增加項目)
+    const shoppingListData = [
+        {
+            img: '合力他命.png',
+            title: '合利他命 EX',
+            note: '2罐|日幣4780~6980',
+            link: 'https://www.google.com/search?q=Alinamin+EX+Plus'
+        },
+        {
+            img: '大正.png',
+            title: '大正製藥 百保能綜合感冒藥微粒',
+            note: '2盒。',
+            link: 'https://www.google.com/search?q=%E5%A4%A7%E6%AD%A3%E8%A3%BD%E8%97%A5+%E7%99%BE%E4%BF%9D%E8%83%BD%E7%B6%9C%E5%90%88%E6%84%9F%E5%86%92%E8%97%A5%E5%BE%AE%E7%B2%92&sca_esv=93bf05b8ac35d58d&sxsrf=ANbL-n54YUCgI8oKnTV4dX5kmMxzHjAU0Q%3A1774101448410&ei=yKO-aZ_iGObt1e8P1aONqQc&biw=1057&bih=1045&ved=0ahUKEwif5oL1krGTAxXmdvUHHdVRI3UQ4dUDCBE&uact=5&oq=%E5%A4%A7%E6%AD%A3%E8%A3%BD%E8%97%A5+%E7%99%BE%E4%BF%9D%E8%83%BD%E7%B6%9C%E5%90%88%E6%84%9F%E5%86%92%E8%97%A5%E5%BE%AE%E7%B2%92&gs_lp=Egxnd3Mtd2l6LXNlcnAiK-Wkp-ato-ijveiXpSDnmb7kv53og73ntpzlkIjmhJ_lhpLol6Xlvq7nspIyBRAAGIAEMgUQABiABDIEEAAYHjIIEAAYiQUYogQyCBAAGIAEGKIEMggQABiJBRiiBDIFEAAY7wUyBRAAGO8FSPUFUABYAHAAeAGQAQCYATmgATmqAQExuAEDyAEA-AEC-AEBmAIBoAI8mAMAkgcBMaAH7QOyBwExuAc8wgcDMC4xyAcCgAgB&sclient=gws-wiz-serp'
+        },
+        {
+            img: '魚油.png', // 假設你有這張圖
+            title: 'DHA＆EPA+芝麻明EX',
+            note: '1盒|台幣1974。',
+            link: 'https://www.google.com/search?q=DHA＆EPA+芝麻明EX'
+        },
+        {
+            img: 'DHC.png',
+            title: 'DHC',
+            note: 'C、鋅、E、鈣/鎂+D、藍莓、瑪卡、膠原蛋白+B群',
+            link: 'https://www.threads.com/@some.m.c.p/post/DNdK25pzcYs?xmt=AQF0Zw7FAv1_M6gRHbTmUCoCy13B12Oz4eNI-UB_CZ5pshU'
+        },
+        {
+            img: 'coffee.png',
+            title: 'Coffee Beans',
+            note: '軒哥:日曬or密處理 Glitch and ULT*1',
+            link: 'https://www.google.com/search?q=GlitchCoffee'
+        },
+        {
+            img: 'akari.png',
+            title:'Akari 1AS->1N->4N',
+            note: '軒哥:日曬or密處理 Glitch and ULT*1',
+            link: 'https://www.google.com/search?q=akari'
+        }
+    ];
 
+    // 2. 渲染購物清單的函式
+    function renderShoppingList() {
+        const grid = document.getElementById('shopping-grid');
+        const countLabel = document.getElementById('shopping-count');
+    
+        if (!grid) return;
 
+        // 更新顯示數量
+        countLabel.innerText = `總計: ${shoppingListData.length} 項`;
+
+        // 產生 HTML
+        grid.innerHTML = shoppingListData.map(item => `
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
+                <div class="w-full h-70 bg-gray-50 rounded-xl overflow-hidden mb-3">
+                    <img src="${item.img}" 
+                        alt="${item.title}" 
+                        class="w-full h-full object-cover"
+                        onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                </div>
+                <div class="flex-1 flex flex-col">
+                    <h3 class="text-sm font-bold text-gray-800 mb-1">${item.title}</h3>
+                    <p class="text-[11px] text-gray-500 leading-snug mb-3 flex-1 line-clamp-2">${item.note}</p>
+                    <a href="${item.link}" target="_blank" 
+                        class="block w-full text-center py-2 bg-indigo-50 text-indigo-600 rounded-lg text-[11px] font-bold transition-all active:scale-95">
+                            <i class="fas fa-link mr-1"></i> 查看商品
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 3. 確保網頁載入時執行一次，並且在切換到購物分頁時也執行
+    document.addEventListener('DOMContentLoaded', () => {
+        renderShoppingList();
+    
+        // 如果你有切換分頁的 function (例如 showSection), 
+        // 建議在切換到 shopping 時也 call 一次 renderShoppingList() 確保畫面更新
+    });
+//記帳工具
+    // 1. 初始化消費資料 (可以先放幾個範例，或留空 [])
+    let expenseListData = [
+        { name: '飛田新地', price: 26000,person:'我' },
+    ];
+
+    // 2. 新增紀錄的函式
+    function addExpense() {
+        const nameInput = document.getElementById('exp-name');
+        const priceInput = document.getElementById('exp-price');
+        const personInput = document.getElementById('exp-person');
+    
+        const name = nameInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const person = personInput.value;
+
+        if (name === "" || isNaN(price)) {
+            alert("請輸入項目名稱與正確金額喔！");
+            return;
+        }
+
+        // 將新資料推入陣列
+        expenseListData.push({ name, price ,person});
+
+        // 清空輸入欄位
+        nameInput.value = "";
+        priceInput.value = "";
+        // 重新渲染畫面
+        renderExpenses();
+    }
+
+    // 3. 刪除紀錄的函式
+    function deleteExpense(index) {
+        expenseListData.splice(index, 1);
+            renderExpenses();
+    }
+
+    // 4. 渲染畫面與計算總金額
+    function renderExpenses() {
+        const listContainer = document.getElementById('expense-list');
+        const totalDisplay = document.getElementById('total-amount');
+    
+        if (!listContainer) return;
+
+        let total = 0;
+    
+        // 產生 HTML 字串
+        listContainer.innerHTML = expenseListData.map((item, index) => {
+            total += item.price; // 累加金額
+            // 根據不同人給予不同的標籤顏色
+            const personColor = item.person === '我' ? 'bg-indigo-100 text-indigo-600' : 
+                        item.person === '你' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600';
+            return `
+                <div class="bg-white px-4 py-3 rounded-xl flex justify-between items-center shadow-sm border border-gray-50">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-1 rounded-md text-[10px] font-bold ${personColor}">${item.person}</span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">${item.name}</p>
+                            <p class="text-[10px] text-gray-400">${new Date().toLocaleDateString()}</p>
+                        </div>
+                    </div>    
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-gray-900">¥ ${item.price.toLocaleString()}</span>
+                        <button onclick="deleteExpense(${index})" class="text-gray-300 hover:text-red-400 transition-colors">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).reverse().join(''); // reverse() 讓最新的紀錄顯示在最上面
+
+        // 更新總金額顯示
+        totalDisplay.innerText = `¥ ${total.toLocaleString()}`;
+    }
+
+    // 5. 初始執行
+    document.addEventListener('DOMContentLoaded', () => {
+        renderExpenses();
+    });
         // Init
         renderDateScroller();
         renderItinerary();

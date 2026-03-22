@@ -171,26 +171,44 @@
                  </a>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="exp-name" placeholder="項目 (例: 拉麵)" 
-                    class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
-                <input type="number" id="exp-price" placeholder="金額 (日幣)" 
-                    class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
-                </div>
-                <select id="exp-person" class="w-full bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200 text-gray-600">
-                    <option value="我">🙋‍♂️ 我</option>
-                    <option value="你">👤 你</option>
-                    <option value="他">👤 他</option>
-                </select>
-                <button onclick="addExpense()" 
-                    class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all">
-                新增紀錄
-                </button>
+            <div class="bg-white rounded-3xl card-shadow p-5 space-y-4 border border-indigo-50">
+                <div class="flex justify-between items-end">
+                    <h3 class="font-bold text-gray-800 text-lg">💰 旅費計算機</h3>
+                    <div class="flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded-lg">
+                        <span class="text-[10px] text-indigo-400 font-bold uppercase">匯率</span>
+                        <input type="number" id="ex-rate" step="0.001" oninput="updateRate(this.value)" class="w-12 bg-transparent text-xs font-bold text-indigo-600 outline-none text-right">
+                    </div>
                 </div>
 
-            <div id="expense-list" class="space-y-2">
+                <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-5 rounded-2xl text-white shadow-inner">
+                    <p class="text-[10px] opacity-70 uppercase tracking-widest">Total JPY</p>
+                    <p id="total-amount" class="text-3xl font-black mb-2">¥ 0</p>
+                    <div class="pt-2 border-t border-white/10 flex justify-between items-center">
+                        <span class="text-xs opacity-70">估計台幣</span>
+                        <span id="total-twd" class="text-lg font-bold text-yellow-300">NT$ 0</span>
+                    </div>
                 </div>
+
+                <div class="space-y-3 pt-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="exp-name" placeholder="項目" class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
+                        <input type="number" id="exp-price" placeholder="日幣" class="bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200">
+                    </div>
+                    <select id="exp-person" class="w-full bg-gray-50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-200 text-gray-600">
+                        <option value="我">🙋‍♂️ 我</option>
+                        <option value="你">👤 你</option>
+                        <option value="他">👤 他</option>
+                    </select>
+                    <button onclick="addExpense()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all">
+                        新增紀錄
+                    </button>
+                </div>
+
+                <div id="expense-list" class="space-y-2 mt-4 max-h-60 overflow-y-auto pr-1 hide-scrollbar"></div>
+
+                <button onclick="clearAll()" class="w-full pt-2 text-[10px] text-gray-300 hover:text-red-400 transition-colors uppercase tracking-widest">
+                    <i class="fas fa-trash-alt mr-1"></i> 清空所有資料
+                </button>
             </div>
         </div>
     </div>
@@ -477,7 +495,7 @@
             note: '2罐|日幣4780~6980',
             link: 'https://www.google.com/search?q=Alinamin+EX+Plus'
         },
-     {
+        {
             img: "https://user1233369.github.io/JPTrip_suzuka/f1/image/cold.PNG",
             title: '大正製藥 百保能綜合感冒藥微粒',
             note: '2盒。',
@@ -503,11 +521,11 @@
         },
         {
             img: "https://user1233369.github.io/JPTrip_suzuka/f1/image/akari.PNG",
-            title:'Akari',
-            note: '1AS->1N->4N',
+            title:'Akari 1AS->1N->4N',
+            note: '軒哥:日曬or密處理 Glitch and ULT*1',
             link: 'https://www.google.com/search?q=akari'
-        },
-    ];  
+        }
+    ];
 
     // 2. 渲染購物清單的函式
     function renderShoppingList() {
@@ -548,6 +566,149 @@
         // 建議在切換到 shopping 時也 call 一次 renderShoppingList() 確保畫面更新
     });
 //記帳工具
+// --- 2. 狀態管理 (記帳) ---
+        const STORAGE_KEY = 'f1_trip_state';
+        let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+            expenses: [],
+            rate: 0.21
+        };
+
+        let activeDateIndex1 = 0;
+
+        // --- 3. 核心功能 ---
+
+        function updateRate(val) {
+            state.rate = parseFloat(val) || 0;
+            saveAndRender();
+        }
+
+        function addExpense() {
+            const nameEl = document.getElementById('exp-name');
+            const priceEl = document.getElementById('exp-price');
+            const personEl = document.getElementById('exp-person');
+            const price = parseFloat(priceEl.value);
+
+            if (!price || price <= 0) return alert("請輸入金額");
+
+            state.expenses.unshift({
+                id: Date.now(),
+                name: nameEl.value || "未命名項目",
+                price: price,
+                person: personEl.value
+            });
+
+            nameEl.value = "";
+            priceEl.value = "";
+            saveAndRender();
+        }
+
+        function deleteExpense(id) {
+            state.expenses = state.expenses.filter(e => e.id !== id);
+            saveAndRender();
+        }
+
+        function clearAll() {
+            if (confirm("要清空所有紀錄嗎？")) {
+                state.expenses = [];
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            
+            // 計算總額
+            const total = state.expenses.reduce((sum, e) => sum + e.price, 0);
+            document.getElementById('total-amount').innerText = `¥ ${total.toLocaleString()}`;
+            document.getElementById('total-twd').innerText = `NT$ ${Math.round(total * state.rate).toLocaleString()}`;
+            document.getElementById('ex-rate').value = state.rate;
+
+            // 渲染清單
+            const listEl = document.getElementById('expense-list');
+            listEl.innerHTML = state.expenses.map(e => `
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-gray-800">${e.name}</span>
+                        <span class="text-[10px] text-gray-400">${e.person}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-black text-indigo-600">¥${e.price.toLocaleString()}</span>
+                        <button onclick="deleteExpense(${e.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-times-circle"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- 4. 介面渲染 (行程 & 購物) ---
+
+        function switchTab(tab) {
+            ['itinerary', 'shopping', 'tools'].forEach(s => {
+                document.getElementById(`${s}-section`).classList.toggle('hidden', s !== tab);
+                document.getElementById(`btn-${s}`).classList.toggle('nav-active', s === tab);
+                document.getElementById(`btn-${s}`).classList.toggle('text-gray-400', s !== tab);
+            });
+        }
+
+        function renderItinerary() {
+            const data = schedule[activeDateIndex];
+            document.getElementById('date-scroller').innerHTML = schedule.map((day, i) => `
+                <button onclick="selectDate(${i})" class="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-xl transition-all ${i === activeDateIndex ? 'bg-indigo-600 text-white shadow-lg scale-105' : 'bg-white text-gray-500 border border-gray-100'}">
+                    <span class="text-[10px] font-medium opacity-70">${day.day}</span>
+                    <span class="text-lg font-bold">${day.date.split('/')[1]}</span>
+                </button>
+            `).join('');
+
+            document.getElementById('itinerary-list').innerHTML = data.items.map(item => `
+                <div class="bg-white p-4 rounded-2xl card-shadow flex gap-4">
+                    <div class="flex flex-col items-center gap-1 pt-1">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center text-xs">
+                            <i class="fas ${item.type === 'food' ? 'fa-utensils' : 'fa-map-marker-alt'}"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400">${item.time}</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800">${item.title}</h3>
+                        <p class="text-xs text-gray-500 mt-1">${item.note}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            fetchWeather(data.coords.lat, data.coords.lon, data.location);
+        }
+
+        function selectDate(i) { activeDateIndex = i; renderItinerary(); }
+
+        async function fetchWeather(lat, lon, loc) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=Asia/Tokyo`);
+                const data = await res.json();
+                document.getElementById('weather-text').innerText = `${loc}: ${data.current_weather.weathercode === 0 ? '晴' : '多雲'} ${data.current_weather.temperature}°C`;
+                document.getElementById('weather-icon').className = 'fas fa-sun text-orange-400';
+            } catch (e) { document.getElementById('weather-text').innerText = "天氣載入失敗"; }
+        }
+
+        function renderShopping() {
+            const grid = document.getElementById('shopping-grid');
+            document.getElementById('shopping-count').innerText = `${shoppingListData.length} 項`;
+            grid.innerHTML = shoppingListData.map(item => `
+                <div class="bg-white p-3 rounded-2xl border border-gray-100 flex flex-col h-full">
+                    <div class="w-full aspect-square bg-gray-50 rounded-xl mb-2 overflow-hidden">
+                        <img src="${item.img}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-800 line-clamp-2 flex-1">${item.title}</h3>
+                    <p class="text-[10px] text-gray-400 mt-1 mb-2">${item.note}</p>
+                    <a href="${item.link}" target="_blank" class="block text-center py-2 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold">查看</a>
+                </div>
+            `).join('');
+        }
+
+        // --- 5. 初始化 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderItinerary();
+            renderShopping();
+            saveAndRender();
+        });
+/*
     // 1. 初始化消費資料 (可以先放幾個範例，或留空 [])
     let expenseListData = [
         { name: '飛田新地', price: 26000,person:'我' },
@@ -626,6 +787,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         renderExpenses();
     });
+    */
         // Init
         renderDateScroller();
         renderItinerary();
